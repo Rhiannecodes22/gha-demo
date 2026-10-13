@@ -49,3 +49,4 @@ jobs:
       operation: Inventory
       result: ${{ needs.test.result }}
     secrets: inherit
+

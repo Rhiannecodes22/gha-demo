@@ -53,3 +53,4 @@ jobs:
       dry_run: ${{ inputs.dry_run != false && inputs.dry_run != 'false' }}
       forks: ${{ fromJSON(inputs.forks || '1') }}
     secrets: inherit
+

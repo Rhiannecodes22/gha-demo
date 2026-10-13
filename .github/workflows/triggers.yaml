@@ -35,3 +35,4 @@ jobs:
           echo "schedule=${{ github.event.schedule }}"
           echo "ref=${{ github.ref }}"
           echo "input=${{ inputs.environment }}"
+

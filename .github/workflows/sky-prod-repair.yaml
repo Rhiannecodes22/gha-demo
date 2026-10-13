@@ -21,3 +21,4 @@ jobs:
       dry_run: true
       forks: 1
     secrets: inherit
+
