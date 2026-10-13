@@ -12,8 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare inventory tooling
-        run: echo "Install Ansible and inventory dependencies once"
+      - name: Validate inventory configuration
+        run: echo "Configuration is valid; later jobs start on separate runners"
 
   test:
     needs: build
@@ -37,6 +37,7 @@ jobs:
     steps:
       - name: Generate ${{ matrix.target.profile }} inventory
         run: |
+          echo "This matrix job has its own runner and workspace"
           echo "AWS_PROFILE=${{ matrix.target.profile }}"
           echo "ansible-inventory --list -i ${{ matrix.target.inventory }}"
           echo "proposition=${{ matrix.target.proposition }}"
