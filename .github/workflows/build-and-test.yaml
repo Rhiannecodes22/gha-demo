@@ -1,0 +1,51 @@
+name: Build and test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare inventory tooling
+        run: echo "Install Ansible and inventory dependencies once"
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - proposition: nbcu
+            profile: nbcu-dev-admin
+            inventory: aws/nbcu
+          - proposition: nbcu
+            profile: nbcu-prod-admin
+            inventory: aws/nbcu
+          - proposition: skycloud
+            profile: skycloud-dev-admin
+            inventory: aws/skyeu
+          - proposition: skycloud
+            profile: skycloud-prod-admin
+            inventory: aws/skyeu
+    steps:
+      - name: Generate ${{ matrix.target.profile }} inventory
+        run: |
+          echo "AWS_PROFILE=${{ matrix.target.profile }}"
+          echo "ansible-inventory --list -i ${{ matrix.target.inventory }}"
+          echo "proposition=${{ matrix.target.proposition }}"
+
+  notify:
+    needs: test
+    if: always()
+    uses: ./.github/workflows/notify-slack.yaml
+    with:
+      operation: Inventory
+      result: ${{ needs.test.result }}
+    secrets: inherit

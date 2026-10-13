@@ -1,0 +1,37 @@
+name: Triggers
+
+on:
+  pull_request:
+    paths:
+      - infra/**
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [dev, prod]
+        default: dev
+  schedule:
+    - cron: "5 6 * * 1-5"
+      timezone: Europe/London
+    - cron: "35 18 * * 1-5"
+      timezone: Europe/London
+  workflow_run:
+    workflows: [Build and test]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  show-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show why this run exists
+        run: |
+          echo "event=${{ github.event_name }}"
+          echo "schedule=${{ github.event.schedule }}"
+          echo "ref=${{ github.ref }}"
+          echo "input=${{ inputs.environment }}"

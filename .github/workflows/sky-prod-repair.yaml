@@ -1,0 +1,23 @@
+name: Sky prod repair
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 2 * * 3"
+      timezone: Europe/London
+
+permissions:
+  contents: read
+
+jobs:
+  repair:
+    uses: ./.github/workflows/cassandra-repair.yaml
+    with:
+      proposition: skycloud
+      environment: prod
+      application: ap
+      stack: "1"
+      datacenter: eu-central-1
+      dry_run: true
+      forks: 1
+    secrets: inherit

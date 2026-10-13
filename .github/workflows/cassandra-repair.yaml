@@ -1,0 +1,56 @@
+name: Cassandra repair
+
+on:
+  workflow_call:
+    inputs:
+      proposition:
+        description: Proposition that owns the cluster
+        required: true
+        type: string
+      environment:
+        description: Environment to repair
+        required: true
+        type: string
+      application:
+        description: Application cluster
+        required: true
+        type: string
+      stack:
+        description: Cluster stack
+        required: true
+        type: string
+      datacenter:
+        description: Datacenter limit
+        required: true
+        type: string
+      dry_run:
+        description: Print the repair command only
+        required: true
+        type: boolean
+      forks:
+        description: Number of repair forks
+        required: true
+        type: number
+
+permissions:
+  contents: read
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run repair for one target
+        run: |
+          echo "playbook=cassandra3gcn-repair.yml"
+          echo "target=${{ inputs.proposition }}/${{ inputs.application }}/${{ inputs.environment }}/v${{ inputs.stack }}"
+          echo "datacenter=${{ inputs.datacenter }}"
+          echo "dry_run=${{ inputs.dry_run }}"
+          echo "forks=${{ inputs.forks }}"
+  notify:
+    needs: repair
+    if: always()
+    uses: ./.github/workflows/notify-slack.yaml
+    with:
+      operation: Cassandra repair
+      result: ${{ needs.repair.result }}
+    secrets: inherit

@@ -1,0 +1,34 @@
+name: Reusable Slack notification
+
+on:
+  workflow_call:
+    inputs:
+      operation:
+        description: Short name shown in the Slack message
+        required: true
+        type: string
+      result:
+        description: Result reported by the calling job
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RESULT: ${{ inputs.result }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "No Slack webhook secret. Notification skipped."
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "Content-type: application/json" \
+            --data "{\"text\":\"${{ inputs.operation }} ${RESULT}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+            "$SLACK_WEBHOOK_URL"

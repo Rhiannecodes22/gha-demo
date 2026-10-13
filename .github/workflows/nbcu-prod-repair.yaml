@@ -1,0 +1,55 @@
+name: NBCU prod repair
+
+on:
+  workflow_dispatch:
+    inputs:
+      application:
+        description: Application cluster
+        type: choice
+        default: ap
+        options:
+          - ap
+          - con-man
+          - cwi
+          - dm
+          - lcm
+          - sse
+          - umv
+      stack:
+        description: Cluster stack
+        type: string
+        default: "1"
+      datacenter:
+        description: Limit the repair to one datacenter
+        type: choice
+        default: us-west-2
+        options:
+          - us-west-2
+          - all
+      dry_run:
+        description: Print the repair command only
+        type: boolean
+        default: true
+      forks:
+        description: Number of repair forks
+        type: number
+        default: 1
+  schedule:
+    - cron: "17 10 * * 1"
+      timezone: America/Los_Angeles
+
+permissions:
+  contents: read
+
+jobs:
+  repair:
+    uses: ./.github/workflows/cassandra-repair.yaml
+    with:
+      proposition: nbcu
+      environment: prod
+      application: ${{ inputs.application || 'ap' }}
+      stack: ${{ inputs.stack || '1' }}
+      datacenter: ${{ inputs.datacenter || 'us-west-2' }}
+      dry_run: ${{ inputs.dry_run != false && inputs.dry_run != 'false' }}
+      forks: ${{ fromJSON(inputs.forks || '1') }}
+    secrets: inherit
