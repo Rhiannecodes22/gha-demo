@@ -1,4 +1,4 @@
-name: Cassandra repair
+name: Reusable Cassandra Repair
 
 on:
   workflow_call:
@@ -51,6 +51,6 @@ jobs:
     if: always()
     uses: ./.github/workflows/notify-slack.yaml
     with:
-      operation: Cassandra repair
+      operation: Reusable Cassandra Repair
       result: ${{ needs.repair.result }}
     secrets: inherit
