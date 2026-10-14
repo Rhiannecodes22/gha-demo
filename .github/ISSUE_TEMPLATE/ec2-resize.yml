@@ -1,0 +1,50 @@
+name: EC2 resize request
+description: Request a reviewed change to an existing service instance type
+title: "[EC2 resize]: "
+labels:
+  - ec2-resize
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This demonstration updates configuration and opens a pull request for SRE review.
+        It does not provision infrastructure or call AWS.
+
+  - type: dropdown
+    id: service
+    attributes:
+      label: Service
+      options:
+        - inventory-api
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - dev
+        - prod
+    validations:
+      required: true
+
+  - type: dropdown
+    id: instance_type
+    attributes:
+      label: Requested instance type
+      options:
+        - t3.small
+        - t3.medium
+        - t3.large
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason
+      description: Explain why the service needs a different size.
+      placeholder: The current instance is regularly CPU constrained.
+    validations:
+      required: true

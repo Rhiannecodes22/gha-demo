@@ -1,0 +1,76 @@
+name: EC2 resize request
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  open-pull-request:
+    if: contains(github.event.issue.labels.*.name, 'ec2-resize')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate request and update existing configuration
+        id: update
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python3 .github/scripts/update_instance_type.py
+
+      - name: Push the configuration change
+        env:
+          BRANCH: request/ec2-resize-${{ github.event.issue.number }}
+          CONFIG_PATH: ${{ steps.update.outputs.config_path }}
+          ENVIRONMENT: ${{ steps.update.outputs.environment }}
+          INSTANCE_TYPE: ${{ steps.update.outputs.instance_type }}
+          SERVICE: ${{ steps.update.outputs.service }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add "$CONFIG_PATH"
+          git commit -m "chore: resize ${SERVICE} ${ENVIRONMENT} to ${INSTANCE_TYPE}"
+          git push --set-upstream origin "$BRANCH"
+
+      - name: Open pull request for SRE review
+        id: pull-request
+        env:
+          BRANCH: request/ec2-resize-${{ github.event.issue.number }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          ENVIRONMENT: ${{ steps.update.outputs.environment }}
+          GH_TOKEN: ${{ github.token }}
+          INSTANCE_TYPE: ${{ steps.update.outputs.instance_type }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          PREVIOUS_INSTANCE_TYPE: ${{ steps.update.outputs.previous_instance_type }}
+          SERVICE: ${{ steps.update.outputs.service }}
+        run: |
+          body=$(cat <<EOF
+          ## EC2 resize request
+
+          - Service: \`${SERVICE}\`
+          - Environment: \`${ENVIRONMENT}\`
+          - Change: \`${PREVIOUS_INSTANCE_TYPE}\` to \`${INSTANCE_TYPE}\`
+          - Request: ${ISSUE_URL}
+
+          Demonstration only. This pull request changes configuration but does not apply Terraform or call AWS.
+          EOF
+          )
+
+          pr_url=$(gh pr create \
+            --base "$DEFAULT_BRANCH" \
+            --head "$BRANCH" \
+            --title "Resize ${SERVICE} ${ENVIRONMENT} to ${INSTANCE_TYPE}" \
+            --body "$body")
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+
+      - name: Link the pull request from the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_URL: ${{ steps.pull-request.outputs.url }}
+        run: gh issue comment "$ISSUE_NUMBER" --body "Created ${PR_URL} for SRE review."
