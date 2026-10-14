@@ -21,6 +21,8 @@ on:
   workflow_run:
     workflows: [Build and test]
     types: [completed]
+  issues:
+    types: [opened]
 
 permissions:
   contents: read
@@ -35,4 +37,6 @@ jobs:
           echo "schedule=${{ github.event.schedule }}"
           echo "ref=${{ github.ref }}"
           echo "input=${{ inputs.environment }}"
+          echo "issue=${{ github.event.issue.number }}"
+          echo "issue_title=${{ github.event.issue.title }}"
 

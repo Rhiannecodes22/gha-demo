@@ -1,6 +1,6 @@
 # GitHub Actions demo
 
-Workflows for the introduction. The build demonstration uses `ubuntu-latest`, read-only contents permission, and commands that only print text. The EC2 resize demonstration writes one configuration change and opens a pull request. It does not call AWS or apply Terraform.
+Workflows for the introduction. Every job uses `ubuntu-latest`, requests read-only contents permission, and only prints text.
 
 The timed demo follows one path:
 
@@ -9,17 +9,13 @@ The timed demo follows one path:
 3. Four isolated matrix jobs print one inventory target each.
 4. `notify-slack.yaml` is called as a reusable workflow.
 5. `release-after-ci.yaml` starts a separate run after successful completion.
-6. An EC2 resize issue updates existing service configuration and opens a pull request for SRE review.
 
 | Open this | What it shows |
 | --- | --- |
-| `.github/workflows/triggers.yaml` | Several triggers, two London schedules, and staggered minutes |
+| `.github/workflows/triggers.yaml` | Push, pull request, schedule, manual input, and a new issue |
 | `.github/workflows/build-and-test.yaml` | `needs` plus an SRE inventory matrix |
 | `.github/workflows/notify-slack.yaml` | Shared notification job called by other workflows |
 | `.github/workflows/release-after-ci.yaml` | A separate run starts only after CI succeeds |
-| `.github/workflows/ec2-resize-request.yaml` | An issue event produces a reviewed configuration change |
-| `.github/ISSUE_TEMPLATE/ec2-resize.yml` | A structured service request with fixed choices |
-| `infra/services/inventory-api.yaml` | Existing service configuration changed by the request |
 | `.github/workflows/cassandra-repair.yaml` | Shared repair implementation |
 | `.github/workflows/nbcu-prod-repair.yaml` | NBCU production entry, Monday schedule, and the manual input form |
 | `.github/workflows/sky-prod-repair.yaml` | The same implementation for Sky production, with a different schedule |
@@ -32,14 +28,4 @@ The inventory matrix replaces repeated Jenkins shell blocks with data. Each matr
 
 Slack is centralised in `notify-slack.yaml`, following a similar DPE pattern. Callers use `secrets: inherit`; explicit named secrets provide a narrower interface. With no configured webhook, the reusable workflow prints a skip message and succeeds.
 
-## EC2 resize demonstration setup
-
-Merge the issue form and workflow to the default branch before the session. GitHub only handles an `issues` event with a workflow that exists on that branch.
-
-In repository Actions settings, allow workflows to create and approve pull requests. The issue form title must start with `[EC2 resize]`, which the template supplies. Do not require the `ec2-resize` label to start the workflow: GitHub applies template labels after the `opened` event, so the workflow cannot see them yet.
-
-The workflow treats the issue body as untrusted input. A Python helper parses the form fields, accepts only known services, environments, and instance types, and updates one existing `instance_type` value.
-
-Use the form to change `inventory-api` in `dev` from `t3.small` to `t3.medium`. The generated pull request is the approval boundary. It has no apply step.
-
-A pull request created with the built-in `GITHUB_TOKEN` does not start another workflow. The generated pull request therefore does not run the `pull_request` path-filter demonstration. A production flow would use a GitHub App token if a Terraform plan workflow must run on that pull request.
+`triggers.yaml` also listens for a newly opened issue. The job prints the issue number and title. It does not change the repository.
