@@ -11,7 +11,9 @@ permissions:
 
 jobs:
   open-pull-request:
-    if: contains(github.event.issue.labels.*.name, 'ec2-resize')
+    # Issue-form labels are applied after the opened event, so that event
+    # does not contain ec2-resize. The form title is present immediately.
+    if: startsWith(github.event.issue.title, '[EC2 resize]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

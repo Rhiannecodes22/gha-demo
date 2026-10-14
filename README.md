@@ -36,7 +36,7 @@ Slack is centralised in `notify-slack.yaml`, following a similar DPE pattern. Ca
 
 Merge the issue form and workflow to the default branch before the session. GitHub only handles an `issues` event with a workflow that exists on that branch.
 
-Create the `ec2-resize` issue label before the session. In repository Actions settings, allow workflows to create and approve pull requests. The issue form applies that label, and the workflow is skipped without it.
+In repository Actions settings, allow workflows to create and approve pull requests. The issue form title must start with `[EC2 resize]`, which the template supplies. Do not require the `ec2-resize` label to start the workflow: GitHub applies template labels after the `opened` event, so the workflow cannot see them yet.
 
 The workflow treats the issue body as untrusted input. A Python helper parses the form fields, accepts only known services, environments, and instance types, and updates one existing `instance_type` value.
 
