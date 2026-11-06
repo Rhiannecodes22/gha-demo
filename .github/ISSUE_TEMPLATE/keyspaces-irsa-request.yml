@@ -1,90 +1,99 @@
-name: AWS Keyspaces - IRSA Role
-description: Request IAM roles so a Kubernetes ServiceAccount can access AWS Keyspaces.
-title: "[AWS Keyspaces IRSA] Provision "
-labels:
-  - AWS
-  - Persistence - AWS Keyspaces
+- type: input
+  id: service_account
+  attributes:
+    label: ServiceAccount name
+    description: One name for every namespace in this request. The name only. GeoBridge uses geobridge-sa.
+    placeholder: geobridge-sa
+  validations:
+    required: true
 
-body:
-  - type: markdown
-    attributes:
-      value: |
-        One issue is one environment. List every Sky, NBCU, and Summer deployment that needs a role in that environment. Dev, stage, and prod are separate issues.
+- type: markdown
+  attributes:
+    value: |
+      ### Sky
+      Leave blank if this request has no Sky role. Dev and prod are eu-central-1.
 
-        From your repo, copy:
-        - the ServiceAccount `metadata.name` (Avatar Orchestrator uses `avatar-orchestrator`)
-        - the namespace the pods run in (for example `avo-stubbed-functional`)
-        - `spring.cassandra.keyspace-name`
-        - the region folder that file is in, such as `eu-central-1` or `us-west-2`
+- type: textarea
+  id: sky_namespaces
+  attributes:
+    label: Sky namespaces
+    description: One namespace per line. These are trusted to use the ServiceAccount name above.
+    placeholder: |
+      geobridge-int
+      geobridge-stable-int
+  validations:
+    required: false
 
-        Write the ServiceAccount name on its own. Write each namespace on its own line below. Leave the role name, the policy, and the connection endpoints to SRE.
+- type: textarea
+  id: sky_keyspaces
+  attributes:
+    label: Sky keyspaces
+    description: One keyspace name per line.
+    placeholder: |
+      geobridge_int_skyeu
+      geobridge_stable_int_skyeu
+  validations:
+    required: false
 
-        This creates the roles only. Your team creates the ServiceAccount, sets `eks.amazonaws.com/role-arn`, and removes the IAM user secret.
+- type: markdown
+  attributes:
+    value: |
+      ### NBCU
+      Leave a region blank when no keyspace is deployed there.
 
-  - type: input
-    id: team
-    attributes:
-      label: Team
-      description: Team that owns the application.
-      placeholder: kronos
-    validations:
-      required: true
+- type: textarea
+  id: nbcu_namespaces
+  attributes:
+    label: NBCU namespaces
+    description: One namespace per line.
+    placeholder: |
+      geobridge-stable-int
+      geobridge-stubbed-nft
+  validations:
+    required: false
 
-  - type: input
-    id: application
-    attributes:
-      label: Application
-      description: Short application name, as used in your repo.
-      placeholder: avatar-orchestrator
-    validations:
-      required: true
+- type: textarea
+  id: nbcu_keyspaces_us_west_2
+  attributes:
+    label: NBCU keyspaces in us-west-2
+    description: One keyspace name per line.
+    placeholder: |
+      geobridge_stable_int_nbcu
+  validations:
+    required: false
 
-  - type: input
-    id: repo
-    attributes:
-      label: Repository
-      description: Link to the application repository, so the namespaces and keyspaces can be checked.
-      placeholder: https://github.com/NBCUDTC/ovp-avatar-orchestrator
-    validations:
-      required: true
+- type: textarea
+  id: nbcu_keyspaces_us_east_2
+  attributes:
+    label: NBCU keyspaces in us-east-2
+    description: One keyspace name per line. Repeat a name here when that keyspace is also deployed in us-west-2.
+    placeholder: |
+      geobridge_prod_nbcu
+  validations:
+    required: false
 
-  - type: dropdown
-    id: environment
-    attributes:
-      label: Environment
-      description: Dev, stage, or prod. File a separate issue for each.
-      options:
-        - dev
-        - stage
-        - prod
-    validations:
-      required: true
+- type: markdown
+  attributes:
+    value: |
+      ### Summer
+      Leave blank if this request has no Summer role. Dev is us-east-2. The dev role is created in the NBCU dev account.
 
-  - type: input
-    id: service_account
-    attributes:
-      label: ServiceAccount name
-      description: The name in your ServiceAccount manifest. One name, with no namespace. Avatar Orchestrator uses `avatar-orchestrator`.
-      placeholder: avatar-orchestrator
-    validations:
-      required: true
+- type: textarea
+  id: summer_namespaces
+  attributes:
+    label: Summer namespaces
+    description: One namespace per line.
+    placeholder: |
+      geobridge-summer-stubbed-nft
+  validations:
+    required: false
 
-  - type: textarea
-    id: deployments
-    attributes:
-      label: Deployments
-      description: One line per deployment, with the organisation, the namespace, the keyspace name, and the region. Use a second line when a namespace has another keyspace, or when the same keyspace is deployed in a second region.
-      placeholder: |
-        Sky avo-stubbed-functional avo_stubbed_functional_skyeu eu-central-1
-        NBCU avo-stable-int avo_stable_int_nbcu us-west-2
-      render: text
-    validations:
-      required: true
-
-  - type: checkboxes
-    id: acknowledgement
-    attributes:
-      label: Acknowledgement
-      options:
-        - label: We will create this ServiceAccount in each namespace above, set the role annotation, and remove the IAM user secret after the roles exist.
-          required: true
+- type: textarea
+  id: summer_keyspaces
+  attributes:
+    label: Summer keyspaces
+    description: One keyspace name per line.
+    placeholder: |
+      geobridge_stubbed_nft_summer
+  validations:
+    required: false
