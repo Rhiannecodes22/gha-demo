@@ -1,99 +1,149 @@
-- type: input
-  id: service_account
-  attributes:
-    label: ServiceAccount name
-    description: One name for every namespace in this request. The name only. GeoBridge uses geobridge-sa.
-    placeholder: geobridge-sa
-  validations:
-    required: true
+name: AWS Keyspaces - IRSA Role
+description: Request an IAM role so a Kubernetes ServiceAccount can access AWS Keyspaces.
+title: "[AWS Keyspaces IRSA] Provision "
+labels:
+  - AWS
+  - Persistence - AWS Keyspaces
 
-- type: markdown
-  attributes:
-    value: |
-      ### Sky
-      Leave blank if this request has no Sky role. Dev and prod are eu-central-1.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One issue is one environment and one role. Fill every organisation this role needs. Leave an organisation blank when it is not part of this request.
 
-- type: textarea
-  id: sky_namespaces
-  attributes:
-    label: Sky namespaces
-    description: One namespace per line. These are trusted to use the ServiceAccount name above.
-    placeholder: |
-      geobridge-int
-      geobridge-stable-int
-  validations:
-    required: false
+        The ServiceAccount name is the name in your ServiceAccount manifest, on its own. It does not have to exist before this role is created. After the role exists, your team adds that ServiceAccount, sets the `eks.amazonaws.com/role-arn` annotation, and removes the IAM user secret.
 
-- type: textarea
-  id: sky_keyspaces
-  attributes:
-    label: Sky keyspaces
-    description: One keyspace name per line.
-    placeholder: |
-      geobridge_int_skyeu
-      geobridge_stable_int_skyeu
-  validations:
-    required: false
+        SRE assigns the role name and the permissions. Connection endpoints are already configured.
 
-- type: markdown
-  attributes:
-    value: |
-      ### NBCU
-      Leave a region blank when no keyspace is deployed there.
+  - type: input
+    id: team
+    attributes:
+      label: Team
+      description: Team that owns the application.
+      placeholder: kronos
+    validations:
+      required: true
 
-- type: textarea
-  id: nbcu_namespaces
-  attributes:
-    label: NBCU namespaces
-    description: One namespace per line.
-    placeholder: |
-      geobridge-stable-int
-      geobridge-stubbed-nft
-  validations:
-    required: false
+  - type: input
+    id: application
+    attributes:
+      label: Application
+      description: The application this role is for.
+      placeholder: geobridge
+    validations:
+      required: true
 
-- type: textarea
-  id: nbcu_keyspaces_us_west_2
-  attributes:
-    label: NBCU keyspaces in us-west-2
-    description: One keyspace name per line.
-    placeholder: |
-      geobridge_stable_int_nbcu
-  validations:
-    required: false
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: File a separate issue for each environment. Stage applies to NBCU.
+      options:
+        - dev
+        - stage
+        - prod
+    validations:
+      required: true
 
-- type: textarea
-  id: nbcu_keyspaces_us_east_2
-  attributes:
-    label: NBCU keyspaces in us-east-2
-    description: One keyspace name per line. Repeat a name here when that keyspace is also deployed in us-west-2.
-    placeholder: |
-      geobridge_prod_nbcu
-  validations:
-    required: false
+  - type: input
+    id: service_account
+    attributes:
+      label: ServiceAccount name
+      description: One name, with no namespace. GeoBridge uses geobridge-sa. A second ServiceAccount name belongs in the notes.
+      placeholder: geobridge-sa
+    validations:
+      required: true
 
-- type: markdown
-  attributes:
-    value: |
-      ### Summer
-      Leave blank if this request has no Summer role. Dev is us-east-2. The dev role is created in the NBCU dev account.
+  - type: markdown
+    attributes:
+      value: |
+        ### Sky
+        Single region, eu-central-1. Leave both boxes blank if this request has no Sky role.
 
-- type: textarea
-  id: summer_namespaces
-  attributes:
-    label: Summer namespaces
-    description: One namespace per line.
-    placeholder: |
-      geobridge-summer-stubbed-nft
-  validations:
-    required: false
+  - type: textarea
+    id: sky_namespaces
+    attributes:
+      label: Sky namespaces
+      description: One namespace per line. Each namespace is trusted to use the ServiceAccount name above.
+      placeholder: |
+        geobridge-int
+        geobridge-stable-int
+      render: text
 
-- type: textarea
-  id: summer_keyspaces
-  attributes:
-    label: Summer keyspaces
-    description: One keyspace name per line.
-    placeholder: |
-      geobridge_stubbed_nft_summer
-  validations:
-    required: false
+  - type: textarea
+    id: sky_keyspaces
+    attributes:
+      label: Sky keyspaces
+      description: One keyspace name per line.
+      placeholder: |
+        geobridge_int_skyeu
+        geobridge_stable_int_skyeu
+      render: text
+
+  - type: markdown
+    attributes:
+      value: |
+        ### NBCU
+        Single region is us-west-2. Dual region is us-west-2 and us-east-2. Choose single region unless every keyspace below is deployed in both regions.
+
+  - type: dropdown
+    id: nbcu_replication
+    attributes:
+      label: NBCU replication
+      options:
+        - Not requested
+        - Single region
+        - Dual region
+    validations:
+      required: true
+
+  - type: textarea
+    id: nbcu_namespaces
+    attributes:
+      label: NBCU namespaces
+      description: One namespace per line. Leave blank when NBCU is not requested.
+      placeholder: |
+        geobridge-stable-int
+        geobridge-stubbed-nft
+      render: text
+
+  - type: textarea
+    id: nbcu_keyspaces
+    attributes:
+      label: NBCU keyspaces
+      description: One keyspace name per line. Leave blank when NBCU is not requested.
+      placeholder: |
+        geobridge_stable_int_nbcu
+        geobridge_stubbed_nft_nbcu
+      render: text
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Summer
+        Single region. Dev is us-east-2. Prod is eu-central-1. Leave both boxes blank if this request has no Summer role.
+
+  - type: textarea
+    id: summer_namespaces
+    attributes:
+      label: Summer namespaces
+      description: One namespace per line.
+      placeholder: |
+        geobridge-summer-stubbed-nft
+      render: text
+
+  - type: textarea
+    id: summer_keyspaces
+    attributes:
+      label: Summer keyspaces
+      description: One keyspace name per line.
+      placeholder: |
+        geobridge_stubbed_nft_summer
+      render: text
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything that does not fit the boxes above. For example a second ServiceAccount and its namespaces, a keyspace that is single region when the NBCU choice is dual region, or the role name you expect.
+      render: text
