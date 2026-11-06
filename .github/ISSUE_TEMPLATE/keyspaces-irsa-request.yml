@@ -15,29 +15,89 @@ body:
 
         SRE assigns the role name and the permissions. Connection endpoints are already configured.
 
-  - type: input
+  - type: dropdown
     id: team
     attributes:
       label: Team
-      description: Team that owns the application.
-      placeholder: kronos
+      description: Team that owns the application. Choose Other if your team is not listed, and enter the name below.
+      options:
+        - kronos
+        - kraken
+        - phoenix
+        - yoshi
+        - Other
     validations:
       required: true
 
   - type: input
+    id: team_other
+    attributes:
+      label: Team name
+      description: Fill this in only when Team is Other.
+      placeholder: loki
+
+  - type: dropdown
     id: application
     attributes:
       label: Application
-      description: The application this role is for.
-      placeholder: geobridge
+      description: Applications that already have an AWS Keyspace. Choose Other if yours is not listed. Returning Series covering both RSS and RSI is rs.
+      options:
+        - ai
+        - apex_adapter
+        - aps
+        - avo
+        - bm
+        - bms
+        - boo
+        - cdn_manager
+        - cmp
+        - csag
+        - dds
+        - devices
+        - dm
+        - drm_kg
+        - els
+        - em
+        - ls
+        - hkm
+        - ls
+        - mali
+        - meo
+        - mvpdb
+        - ovp_reference
+        - pc
+        - pvs
+        - ras
+        - rilo
+        - rm
+        - rms
+        - roman
+        - rs
+        - rsi
+        - rss
+        - rv
+        - scupper
+        - sse
+        - ssei
+        - tm
+        - tmi
+        - umv
+        - Other
     validations:
       required: true
+
+  - type: input
+    id: application_other
+    attributes:
+      label: Application name
+      description: Fill this in only when Application is Other. Short name, lowercase, with underscores.
+      placeholder: my_app
 
   - type: dropdown
     id: environment
     attributes:
       label: Environment
-      description: File a separate issue for each environment. Stage applies to NBCU.
+      description: Raise a separate issue for each environment. Stage applies to NBCU.
       options:
         - dev
         - stage
@@ -49,8 +109,8 @@ body:
     id: service_account
     attributes:
       label: ServiceAccount name
-      description: One name, with no namespace. GeoBridge uses geobridge-sa. A second ServiceAccount name belongs in the notes.
-      placeholder: geobridge-sa
+      description: e.g app_name-sa.
+      placeholder: app_name-sa
     validations:
       required: true
 
@@ -66,8 +126,8 @@ body:
       label: Sky namespaces
       description: One namespace per line. Each namespace is trusted to use the ServiceAccount name above.
       placeholder: |
-        geobridge-int
-        geobridge-stable-int
+        ls-int
+        ls-stable-int
       render: text
 
   - type: textarea
@@ -76,15 +136,15 @@ body:
       label: Sky keyspaces
       description: One keyspace name per line.
       placeholder: |
-        geobridge_int_skyeu
-        geobridge_stable_int_skyeu
+        ls_int_skyeu
+        ls_stable_int_skyeu
       render: text
 
   - type: markdown
     attributes:
       value: |
         ### NBCU
-        Single region is us-west-2. Dual region is us-west-2 and us-east-2. Choose single region unless every keyspace below is deployed in both regions.
+        Dev Single region (us-west-2). Dual region (us-west-2 and us-east-2). Choose single region unless every keyspace below is deployed in both regions.
 
   - type: dropdown
     id: nbcu_replication
@@ -103,8 +163,8 @@ body:
       label: NBCU namespaces
       description: One namespace per line. Leave blank when NBCU is not requested.
       placeholder: |
-        geobridge-stable-int
-        geobridge-stubbed-nft
+        ls-stable-int
+        ls-stubbed-nft
       render: text
 
   - type: textarea
@@ -113,8 +173,8 @@ body:
       label: NBCU keyspaces
       description: One keyspace name per line. Leave blank when NBCU is not requested.
       placeholder: |
-        geobridge_stable_int_nbcu
-        geobridge_stubbed_nft_nbcu
+        ls_stable_int_nbcu
+        ls_stubbed_nft_nbcu
       render: text
 
   - type: markdown
@@ -129,7 +189,7 @@ body:
       label: Summer namespaces
       description: One namespace per line.
       placeholder: |
-        geobridge-summer-stubbed-nft
+        ls-summer-stubbed-nft
       render: text
 
   - type: textarea
@@ -138,7 +198,7 @@ body:
       label: Summer keyspaces
       description: One keyspace name per line.
       placeholder: |
-        geobridge_stubbed_nft_summer
+        ls_stubbed_nft_summer
       render: text
 
   - type: textarea
