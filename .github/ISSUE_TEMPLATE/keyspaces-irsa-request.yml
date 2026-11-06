@@ -1,0 +1,126 @@
+name: AWS Keyspaces - IRSA Role
+description: Request an IAM role so a Kubernetes ServiceAccount can access AWS Keyspaces.
+title: "[AWS Keyspaces IRSA] Provision "
+labels:
+  - AWS
+  - Persistence - AWS Keyspaces
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One issue is one organisation and one environment. File separate issues for Sky, NBCU, and Summer, and separate issues for dev, stage, and prod.
+
+        The role name is assigned automatically: `ovp_<app>_<environment>`, and `ovp_<app>_summer_<environment>` for Summer. Permissions use the standard Keyspaces role policy. Connection endpoints are already configured.
+
+        Creating the keyspace is a separate request. This request creates the role only. The app team creates the ServiceAccount, sets the role annotation, and removes the IAM user secret.
+
+  - type: input
+    id: team
+    attributes:
+      label: Team
+      description: Team that owns the application. Lowercase letters, numbers, and hyphens.
+      placeholder: kronos
+    validations:
+      required: true
+
+  - type: input
+    id: application
+    attributes:
+      label: Application
+      description: Short application name. Lowercase letters, numbers, and single underscores. This becomes part of the role name.
+      placeholder: els
+    validations:
+      required: true
+
+  - type: dropdown
+    id: organisation
+    attributes:
+      label: Organisation
+      description: AWS account for this role. Sky is the NowTV account. NBCU is the Peacock account. Summer covers Showmax and SkyShowtime. Summer dev roles are created in the NBCU dev account and receive a distinct role name.
+      options:
+        - Sky
+        - NBCU
+        - Summer
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Environment for this role. Stage applies to NBCU. Sky and Summer have no stage role for these applications.
+      options:
+        - dev
+        - stage
+        - prod
+    validations:
+      required: true
+
+  - type: textarea
+    id: service_accounts
+    attributes:
+      label: ServiceAccounts
+      description: One entry per line, as `namespace:service-account-name`. Include every namespace where the pods run.
+      placeholder: |
+        els-int:els-sa
+        els-stable-int:els-sa
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: keyspaces
+    attributes:
+      label: Keyspaces
+      description: One keyspace per line, as `keyspace-name region`. Add a second region on the same line, separated by a comma. Give the region where that keyspace is deployed. Include a keyspace the application can switch to at runtime.
+      placeholder: |
+        els_int_skyeu eu-central-1
+        els_stable_int_nbcu us-west-2,us-east-2
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: app_config
+    attributes:
+      label: App config location
+      description: Path or link to the configuration that sets the keyspace name, including any alias map.
+      placeholder: path/to/application-prod.yaml
+    validations:
+      required: true
+
+  - type: input
+    id: iam_user
+    attributes:
+      label: Existing IAM user
+      description: Username the application uses today, if it still has one. Leave blank if there is none.
+      placeholder: els_dev_app_user
+    validations:
+      required: false
+
+  - type: textarea
+    id: other_workload
+    attributes:
+      label: Other workload
+      description: A Job or second deployment in another namespace that uses these keyspaces. Give its namespace, ServiceAccount, and IAM user. Leave blank if the only extra user is a cql-migrator that will keep its IAM user.
+      placeholder: ssei-b-prod:ssei-sa uses ssei_prod_summer_app_user
+      render: text
+    validations:
+      required: false
+
+  - type: input
+    id: contact
+    attributes:
+      label: Point of contact
+      description: Who SRE should ask about this request. Leave blank to use the issue author.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: The app team will create the ServiceAccount, set the role annotation, and remove the IAM user secret after this role exists.
+          required: true
