@@ -1,5 +1,5 @@
 ---
-name: NEW AWS Keyspaces - IRSA Role
+name: AWS Keyspaces - IRSA Role
 about: Request IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
 title: "Provision IAM Roles for IRSA Authentication - "
 labels: AWS,Persistence - AWS Keyspaces
@@ -45,7 +45,9 @@ Summer:
 
 **2. Regional IAM Policy Permissions (Keyspaces):**
 
-One keyspace name per line under the heading that matches where it runs. A dual-region heading means that name is in both regions. Leave a heading empty when it does not apply. Stage is NBCU only.
+One keyspace name per line under the heading that matches where it runs. A dual-region heading means that name is in both regions. Leave a heading empty when it does not apply.
+
+Dev usually runs in a single region: SkyEU in eu-central-1, NBCU in us-west-2, and Summer in us-east-2. Stage is NBCU only and may use us-west-2 and us-east-2. Prod may use dual regions: SkyEU in eu-central-1 and eu-west-1, NBCU in us-west-2 and us-east-2, and Summer in eu-central-1.
 
 - **SkyEU dual-region (eu-central-1 & eu-west-1):**
 
