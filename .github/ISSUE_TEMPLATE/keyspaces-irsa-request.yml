@@ -1,4 +1,4 @@
-name: AWS Keyspaces - IRSA Role
+name: AWS Keyspaces - IRSA Role yml
 description: Request IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
 title: "Provision IAM Roles for IRSA Authentication - "
 labels:
