@@ -1,6 +1,6 @@
-name: AWS Keyspaces - IRSA Role
+name: AWS Keyspaces - IRSA Role0
 description: Request an IAM role so a Kubernetes ServiceAccount can access AWS Keyspaces.
-title: "[AWS Keyspaces IRSA] Provision "
+title: "[AWS Keyspaces IRSA] Provision0 "
 labels:
   - AWS
   - Persistence - AWS Keyspaces
@@ -21,9 +21,15 @@ body:
       label: Team
       description: Team that owns the application. Choose Other if your team is not listed, and enter the name below.
       options:
-        - kronos
+        - alto
+        - arcus
         - kraken
+        - kronos
+        - lakitu
+        - loki
+        - nova
         - phoenix
+        - pulse
         - yoshi
         - Other
     validations:
@@ -58,9 +64,9 @@ body:
         - drm_kg
         - els
         - em
-        - ls
-        - hkm
         - geobridge
+        - hkm
+        - ls
         - mali
         - meo
         - mvpdb
@@ -92,6 +98,13 @@ body:
       label: Application name
       description: Fill this in only when Application is Other. Short name, lowercase, with underscores.
       placeholder: my_app
+
+  - type: input
+    id: repository
+    attributes:
+      label: Repository
+      description: Fill this in only when Application is Other. Link to the application repository.
+      placeholder: https://github.com/NBCUDTC/ovp-avatar-orchestrator
 
   - type: dropdown
     id: environment
