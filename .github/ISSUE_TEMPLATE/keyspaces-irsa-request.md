@@ -6,49 +6,49 @@ labels: AWS,Persistence - AWS Keyspaces
 assignees: ""
 ---
 
-## Description of work
-
-<!-- Say what the application is, and whether the keyspaces already exist. -->
-
-## Priority
-
-- [ ] Urgent (today or this week)
-- [ ] Normal (next or upcoming Sprint)
-- [ ] Low (after next Sprint or later)
-
-## Proposition
-
-- [ ] SkyEU
-- [ ] Peacock (NBCU)
-- [ ] SkyShowtime (Summer)
-
-## Environment
-
-- [ ] dev
-- [ ] stage
-- [ ] prod
-
 ## Description of Requirements
 
 Provision IAM Roles for IRSA with the following requirements.
 
 **Team:**
 **Application:**
+**Service Account**: `service-account-name`
+
+### Priority
+
+- [ ] Urgent (today or this week)
+- [ ] Normal (next or upcoming Sprint)
+- [ ] Low (after next Sprint or later)
+
+### Proposition
+
+- [ ] SkyEU
+- [ ] Peacock (NBCU)
+- [ ] SkyShowtime (Summer)
+
+### Environment
+
+- [ ] dev
+- [ ] stage
+- [ ] prod
+
 
 **1. Trust Relationship (IRSA):**
 
-All roles must trust the Service Account `` in the following namespaces. Separate namespaces with a comma. Leave a proposition empty when this request has no role there.
+All roles must trust the Service Account `` in the following namespaces. List namespaces after the label, separated by commas. Leave empty when this request has no role there.
 
 SkyEU:
 NBCU:
 Summer:
 
 **2. Regional IAM Policy Permissions (Keyspaces):**
+<!-- 
+List the keyspaces for each region after its heading, separated by commas. Leave a heading empty when it does not apply.
 
-One keyspace name per line under the heading that matches where it runs. A dual-region heading means that name is in both regions. Leave a heading empty when it does not apply.
+Example: **SkyEU dual-region (eu-central-1 & eu-west-1):** keyspace_example1_skyeu,keyspace_example2_skyeu
 
 Dev usually runs in a single region: SkyEU in eu-central-1, NBCU in us-west-2, and Summer in us-east-2. Stage is NBCU only and may use us-west-2 and us-east-2. Prod may use dual regions: SkyEU in eu-central-1 and eu-west-1, NBCU in us-west-2 and us-east-2, and Summer in eu-central-1.
-
+ -->
 - **SkyEU dual-region (eu-central-1 & eu-west-1):**
 
 - **SkyEU single-region eu-central-1:**
@@ -65,13 +65,14 @@ Dev usually runs in a single region: SkyEU in eu-central-1, NBCU in us-west-2, a
 
 - **Summer single-region eu-central-1:**
 
-## Point of Contact
+### Point of Contact
 
 Name and email
 #slack
 
-## Definition of Done
+### Definition of Done
 
+<!-- For OVP SRE after the request is submitted. The requester leaves these unticked. -->
 - [ ] IAM roles created for each proposition in this request
 - [ ] Trust relationship limited to the service account in the namespaces listed
 - [ ] Role ARNs provided to the team
