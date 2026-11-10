@@ -1,25 +1,55 @@
-name: AWS Keyspaces - IRSA Role0
-description: Request an IAM role so a Kubernetes ServiceAccount can access AWS Keyspaces.
-title: "[AWS Keyspaces IRSA] Provision0 "
+name: AWS Keyspaces - IRSA Role
+description: Request IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
+title: "Provision IAM Roles for IRSA Authentication - "
 labels:
   - AWS
   - Persistence - AWS Keyspaces
-
 body:
   - type: markdown
     attributes:
       value: |
-        One issue is one environment and one role. Fill every organisation this role needs. Leave an organisation blank when it is not part of this request.
+        One request is one application, one environment, and one service account. It does not create an IAM user or the keyspace.
 
-        The ServiceAccount name is the name in your ServiceAccount manifest, on its own. It does not have to exist before this role is created. After the role exists, your team adds that ServiceAccount, sets the `eks.amazonaws.com/role-arn` annotation, and removes the IAM user secret.
+        Each proposition below becomes one IAM role. Leave a proposition empty when this request has no role there. Stage is NBCU only.
 
-        SRE assigns the role name and the permissions. Connection endpoints are already configured.
+        In a proposition, one row is one namespace. A keyspace row lists its own regions, separated by a comma. `us-west-2, us-east-2` and `us-west-2,us-east-2` are both accepted. Dev is normally one region. Stage and prod may be two.
+
+        NBCU prod example:
+
+        ```
+        | Namespace |
+        | --- |
+        | app-stable-int |
+        | app-extended-nft |
+
+        | Keyspace | Region |
+        | --- | --- |
+        | app_keyspace1_nbcu | us-west-2,us-east-2 |
+        | app_keyspace2_nbcu | us-west-2 |
+        ```
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Urgent (today or this week)
+        - Normal (next or upcoming Sprint)
+        - Low (after next Sprint or later)
+    validations:
+      required: true
+
+  - type: input
+    id: completion_date
+    attributes:
+      label: Required completion date
+      description: Add a date if there is one. Otherwise leave this blank.
 
   - type: dropdown
     id: team
     attributes:
       label: Team
-      description: Team that owns the application. Choose Other if your team is not listed, and enter the name below.
+      description: Team that owns the application. This is the team tag on the IAM role. Choose Other if your team is not listed.
       options:
         - alto
         - arcus
@@ -36,17 +66,16 @@ body:
       required: true
 
   - type: input
-    id: team_other
+    id: team_name
     attributes:
       label: Team name
-      description: Fill this in only when Team is Other.
-      placeholder: loki
+      description: Fill this in only when Team is Other. Use lowercase letters, digits, or hyphens.
 
   - type: dropdown
-    id: application
+    id: app_name
     attributes:
-      label: Application
-      description: Applications that already have an AWS Keyspace. Choose Other if yours is not listed. Returning Series covering both RSS and RSI is rs.
+      label: App name
+      description: The code is the Keyspaces register name. Choose Other if your application is not listed.
       options:
         - ai
         - apex_adapter
@@ -62,25 +91,23 @@ body:
         - devices
         - dm
         - drm_kg
-        - els
+        - els (Enforced Localisation Service)
         - em
         - geobridge
         - hkm
-        - ls
+        - ls (Localisation Service)
         - mali
         - meo
         - mvpdb
-        - ovp_reference
-        - pc
+        - ovp_reference (Reference app)
+        - pc (Parental Control)
         - pvs
         - ras
         - rilo
         - rm
         - rms
         - roman
-        - rs
-        - rsi
-        - rss
+        - rs (Returning Series, RSS and RSI)
         - rv
         - scupper
         - sse
@@ -93,24 +120,16 @@ body:
       required: true
 
   - type: input
-    id: application_other
+    id: application_name
     attributes:
       label: Application name
-      description: Fill this in only when Application is Other. Short name, lowercase, with underscores.
-      placeholder: my_app
-
-  - type: input
-    id: repository
-    attributes:
-      label: Repository
-      description: Fill this in only when Application is Other. Link to the application repository.
-      placeholder: https://github.com/NBCUDTC/ovp-avatar-orchestrator
+      description: Fill this in only when App name is Other. Use the register slug, with lowercase letters, digits, and underscores.
 
   - type: dropdown
     id: environment
     attributes:
       label: Environment
-      description: Raise a separate issue for each environment. Stage applies to NBCU.
+      description: Stage is NBCU only.
       options:
         - dev
         - stage
@@ -121,102 +140,83 @@ body:
   - type: input
     id: service_account
     attributes:
-      label: ServiceAccount name
-      description: e.g app_name-sa.
-      placeholder: app_name-sa
+      label: Service account
+      description: The service account name on its own, for example ls-sa. One name for every proposition in this request.
+      placeholder: ls-sa
     validations:
       required: true
 
-  - type: markdown
+  - type: input
+    id: point_of_contact
     attributes:
-      value: |
-        ### Sky
-        Single region, eu-central-1. Leave both boxes blank if this request has no Sky role.
-
-  - type: textarea
-    id: sky_namespaces
-    attributes:
-      label: Sky namespaces
-      description: One namespace per line. Each namespace is trusted to use the ServiceAccount name above.
-      placeholder: |
-        ls-int
-        ls-stable-int
-      render: text
-
-  - type: textarea
-    id: sky_keyspaces
-    attributes:
-      label: Sky keyspaces
-      description: One keyspace name per line.
-      placeholder: |
-        ls_int_skyeu
-        ls_stable_int_skyeu
-      render: text
-
-  - type: markdown
-    attributes:
-      value: |
-        ### NBCU
-        Dev Single region (us-west-2). Dual region (us-west-2 and us-east-2). Choose single region unless every keyspace below is deployed in both regions.
-
-  - type: dropdown
-    id: nbcu_replication
-    attributes:
-      label: NBCU replication
-      options:
-        - Not requested
-        - Single region
-        - Dual region
+      label: Point of contact
+      description: Who SRE should reply to.
     validations:
       required: true
 
   - type: textarea
-    id: nbcu_namespaces
+    id: skyeu
     attributes:
-      label: NBCU namespaces
-      description: One namespace per line. Leave blank when NBCU is not requested.
+      label: SkyEU
+      description: Leave empty when this request has no SkyEU role.
       placeholder: |
-        ls-stable-int
-        ls-stubbed-nft
-      render: text
+        | Namespace |
+        | --- |
+        | app-stable-int |
+
+        | Keyspace | Region |
+        | --- |
+        | app_stable_int_skyeu | eu-central-1 |
+    validations:
+      required: false
 
   - type: textarea
-    id: nbcu_keyspaces
+    id: nbcu
     attributes:
-      label: NBCU keyspaces
-      description: One keyspace name per line. Leave blank when NBCU is not requested.
+      label: NBCU (Peacock)
+      description: Leave empty when this request has no NBCU role.
       placeholder: |
-        ls_stable_int_nbcu
-        ls_stubbed_nft_nbcu
-      render: text
+        | Namespace |
+        | --- |
+        | app-stable-int |
 
-  - type: markdown
-    attributes:
-      value: |
-        ### Summer
-        Single region. Dev is us-east-2. Prod is eu-central-1. Leave both boxes blank if this request has no Summer role.
-
-  - type: textarea
-    id: summer_namespaces
-    attributes:
-      label: Summer namespaces
-      description: One namespace per line.
-      placeholder: |
-        ls-summer-stubbed-nft
-      render: text
+        | Keyspace | Region |
+        | --- |
+        | app_stable_int_nbcu | us-west-2 |
+    validations:
+      required: false
 
   - type: textarea
-    id: summer_keyspaces
+    id: summer
     attributes:
-      label: Summer keyspaces
-      description: One keyspace name per line.
+      label: Summer (SkyShowtime)
+      description: Leave empty when this request has no Summer role. Summer dev regions are us-east-2. Summer prod regions are eu-central-1.
       placeholder: |
-        ls_stubbed_nft_summer
-      render: text
+        | Namespace |
+        | --- |
+        | app-stable-int |
+
+        | Keyspace | Region |
+        | --- |
+        | app_stable_int_summer | us-east-2 |
+    validations:
+      required: false
 
   - type: textarea
     id: notes
     attributes:
       label: Notes
-      description: Anything that does not fit the boxes above. For example a second ServiceAccount and its namespaces, a keyspace that is single region when the NBCU choice is dual region, or the role name you expect.
-      render: text
+      description: Anything that does not fit the tables. A second service account written here is not added to the role.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        Useful docs: [High Level How OVP SRE Manages AWS Keyspaces](https://gspcloud.atlassian.net/wiki/spaces/ODO/pages/1862205461/High+Level+How+OVP+SRE+Manages+AWS+Keyspaces)
+
+        Definition of Done, for OVP SRE after the request is submitted:
+
+        - [ ] IAM roles created for each proposition in this request
+        - [ ] Trust relationship limited to the service account in the namespaces listed
+        - [ ] Role ARNs provided to team
