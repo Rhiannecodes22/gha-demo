@@ -1,0 +1,223 @@
+name: AWS Keyspaces - IRSA Role - Stage and prod
+description: Request stage or prod IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
+title: "Provision IAM Roles for IRSA Authentication - "
+labels:
+  - AWS
+  - Persistence - AWS Keyspaces
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One request is one application, one environment, and one service account. It does not create an IAM user or the keyspace.
+
+        Each proposition is one role. Leave a proposition empty when this request has no role there. Stage is NBCU only, so leave SkyEU and Summer empty for a stage request.
+
+        A keyspace box is one region. Write a single-region keyspace in that region's box. Write a dual-region keyspace in both boxes for that proposition. Enter one name per line. The description above each box stays visible while you type.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Urgent (today or this week)
+        - Normal (next or upcoming Sprint)
+        - Low (after next Sprint or later)
+    validations:
+      required: true
+
+  - type: input
+    id: completion_date
+    attributes:
+      label: Required completion date
+      description: Add a date if there is one. Otherwise leave this blank.
+
+  - type: dropdown
+    id: team
+    attributes:
+      label: Team
+      description: Team that owns the application. This is the team tag on the IAM role. Choose Other if your team is not listed.
+      options:
+        - alto
+        - arcus
+        - kraken
+        - kronos
+        - lakitu
+        - loki
+        - nova
+        - phoenix
+        - pulse
+        - yoshi
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: team_name
+    attributes:
+      label: Team name
+      description: Fill this in only when Team is Other. Use lowercase letters, digits, or hyphens.
+
+  - type: dropdown
+    id: app_name
+    attributes:
+      label: App name
+      description: The code is the Keyspaces register name. Choose Other if your application is not listed.
+      options:
+        - ai
+        - apex_adapter
+        - aps
+        - avo
+        - bm
+        - bms
+        - boo
+        - cdn_manager
+        - cmp
+        - csag
+        - dds
+        - devices
+        - dm
+        - drm_kg
+        - els (Enforced Localisation Service)
+        - em
+        - geobridge
+        - hkm
+        - ls (Localisation Service)
+        - mali
+        - meo
+        - mvpdb
+        - ovp_reference (Reference app)
+        - pc (Parental Control)
+        - pvs
+        - ras
+        - rilo
+        - rm
+        - rms
+        - roman
+        - rs (Returning Series, RSS and RSI)
+        - rv
+        - scupper
+        - sse
+        - ssei
+        - tm
+        - tmi
+        - umv
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: application_name
+    attributes:
+      label: Application name
+      description: Fill this in only when App name is Other. Use the register slug, with lowercase letters, digits, and underscores.
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Stage is NBCU only.
+      options:
+        - stage
+        - prod
+    validations:
+      required: true
+
+  - type: input
+    id: service_account
+    attributes:
+      label: Service account
+      description: The service account name on its own, for example sse-sa. One name for every proposition in this request.
+      placeholder: sse-sa
+    validations:
+      required: true
+
+  - type: input
+    id: point_of_contact
+    attributes:
+      label: Point of contact
+      description: Who SRE should reply to.
+    validations:
+      required: true
+
+  - type: textarea
+    id: skyeu_namespaces
+    attributes:
+      label: SkyEU namespaces
+      description: One namespace per line. Leave empty when this request has no SkyEU role. Example, sse-prod.
+    validations:
+      required: false
+
+  - type: textarea
+    id: skyeu_eu_central_1
+    attributes:
+      label: SkyEU eu-central-1 keyspaces
+      description: One keyspace per line. Leave empty when this request has no eu-central-1 SkyEU keyspace. Example, sse_euc1_prod_skyeu.
+    validations:
+      required: false
+
+  - type: textarea
+    id: skyeu_eu_west_1
+    attributes:
+      label: SkyEU eu-west-1 keyspaces
+      description: One keyspace per line. Leave empty when this request has no eu-west-1 SkyEU keyspace. Example, sse_euw1_prod_skyeu.
+    validations:
+      required: false
+
+  - type: textarea
+    id: nbcu_namespaces
+    attributes:
+      label: NBCU namespaces
+      description: One namespace per line. Leave empty when this request has no NBCU role. Example, sse-prod.
+    validations:
+      required: false
+
+  - type: textarea
+    id: nbcu_us_west_2
+    attributes:
+      label: NBCU us-west-2 keyspaces
+      description: One keyspace per line. Leave empty when this request has no us-west-2 NBCU keyspace. Example, sse_usw2_prod_nbcu.
+    validations:
+      required: false
+
+  - type: textarea
+    id: nbcu_us_east_2
+    attributes:
+      label: NBCU us-east-2 keyspaces
+      description: One keyspace per line. Leave empty when this request has no us-east-2 NBCU keyspace. Example, sse_use2_prod_nbcu.
+    validations:
+      required: false
+
+  - type: textarea
+    id: summer_namespaces
+    attributes:
+      label: Summer namespaces
+      description: One namespace per line. Leave empty when this request has no Summer role. Example, sse-prod.
+    validations:
+      required: false
+
+  - type: textarea
+    id: summer_eu_central_1
+    attributes:
+      label: Summer eu-central-1 keyspaces
+      description: One keyspace per line. Leave empty when this request has no Summer keyspace. Example, sse_euc1_prod_summer.
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything that does not fit the boxes. A second service account written here is not added to the role.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        Useful docs: [High Level How OVP SRE Manages AWS Keyspaces](https://gspcloud.atlassian.net/wiki/spaces/ODO/pages/1862205461/High+Level+How+OVP+SRE+Manages+AWS+Keyspaces)
+
+        Definition of Done, for OVP SRE after the request is submitted:
+
+        - [ ] IAM roles created for each proposition in this request
+        - [ ] Trust relationship limited to the service account in the namespaces listed
+        - [ ] Role ARNs provided to team
