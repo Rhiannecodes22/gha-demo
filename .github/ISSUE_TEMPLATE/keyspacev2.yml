@@ -1,0 +1,183 @@
+name: AWS Keyspaces - IRSA Role
+description: Request IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
+title: "Provision IAM Roles for IRSA Authentication - "
+labels:
+  - AWS
+  - Persistence - AWS Keyspaces
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One request is one application, one environment, and one service account. It does not create an IAM user or the keyspace.
+
+        Each proposition below becomes one IAM role. Leave a proposition empty when this request has no role there. Stage is NBCU only.
+
+        In a proposition, one row is one namespace. A keyspace row lists its own regions, separated by a comma. `us-west-2, us-east-2` and `us-west-2,us-east-2` are both accepted. Dev is normally one region. Stage and prod may be two.
+
+        NBCU prod example:
+
+        ```
+        | Namespace |
+        | --- |
+        | app-stable-int |
+        | app-extended-nft |
+
+        | Keyspace | Region |
+        | --- |
+        | app_stubbed_nft_nbcu | us-west-2,us-east-2 |
+        | app_extended_nft_nbcu | us-west-2 |
+        ```
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Urgent (today or this week)
+        - Normal (next or upcoming Sprint)
+        - Low (after next Sprint or later)
+    validations:
+      required: true
+
+  - type: input
+    id: completion_date
+    attributes:
+      label: Required completion date
+      description: Leave blank unless a date has been agreed. Otherwise this is normal sprint priority.
+      placeholder: 2026-12-01
+
+  - type: dropdown
+    id: team
+    attributes:
+      label: Team
+      description: Team that owns the application. This is the team tag on the IAM role.
+      options:
+        - alto
+        - arcus
+        - kraken
+        - kronos
+        - lakitu
+        - loki
+        - nova
+        - phoenix
+        - pulse
+        - yoshi
+    validations:
+      required: true
+
+  - type: dropdown
+    id: app_name
+    attributes:
+      label: App name
+      description: The role slug. Devices is gve_devices. Parental controls, Returning Series, and the reference app use parental_controls, returning_series, and reference_app.
+      options:
+        - els
+        - geobridge
+        - gve_devices
+        - hkm
+        - ls
+        - parental_controls
+        - reference_app
+        - returning_series
+        - rm_api
+        - rmi
+        - sse
+        - ssei
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Stage is NBCU only.
+      options:
+        - dev
+        - stage
+        - prod
+    validations:
+      required: true
+
+  - type: input
+    id: service_account
+    attributes:
+      label: Service account
+      description: The service account name on its own, for example ls-sa. One name for every proposition in this request.
+      placeholder: ls-sa
+    validations:
+      required: true
+
+  - type: input
+    id: point_of_contact
+    attributes:
+      label: Point of contact
+      description: Who SRE should reply to.
+    validations:
+      required: true
+
+  - type: textarea
+    id: skyeu
+    attributes:
+      label: SkyEU
+      description: Leave empty when this request has no SkyEU role.
+      placeholder: |
+        | Namespace |
+        | --- |
+        | app-stable-int |
+
+        | Keyspace | Region |
+        | --- |
+        | app_stable_int_skyeu | eu-central-1 |
+    validations:
+      required: false
+
+  - type: textarea
+    id: nbcu
+    attributes:
+      label: NBCU (Peacock)
+      description: Leave empty when this request has no NBCU role.
+      placeholder: |
+        | Namespace |
+        | --- |
+        | app-stable-int |
+
+        | Keyspace | Region |
+        | --- |
+        | app_stable_int_nbcu | us-west-2 |
+    validations:
+      required: false
+
+  - type: textarea
+    id: summer
+    attributes:
+      label: Summer (SkyShowtime)
+      description: Leave empty when this request has no Summer role. Summer dev regions are us-east-2. Summer prod regions are eu-central-1.
+      placeholder: |
+        | Namespace |
+        | --- |
+        | app-stable-int |
+
+        | Keyspace | Region |
+        | --- |
+        | app_stable_int_summer | us-east-2 |
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Anything that does not fit the tables. A second service account written here is not added to the role.
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        Useful docs: [High Level How OVP SRE Manages AWS Keyspaces](https://gspcloud.atlassian.net/wiki/spaces/ODO/pages/1862205461/High+Level+How+OVP+SRE+Manages+AWS+Keyspaces)
+
+        Definition of Done, for OVP SRE after the request is submitted:
+
+        - [ ] IAM roles created for each proposition in this request
+        - [ ] Trust relationship limited to the service account in the namespaces listed
+        - [ ] Role ARNs provided to team
