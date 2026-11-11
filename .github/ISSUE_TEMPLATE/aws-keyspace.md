@@ -106,7 +106,7 @@ Complete this only if you selected IRSA. Add one line for each namespace that ne
 - Team: `team-name`
 - `<Project> <environment>`: ServiceAccount `app-sa` in namespace `app-namespace`
 
-<-- Example:
+<!-- Example:
 SkyEU dev: ServiceAccount `app-sa` in namespace `app-stubbed-functional`,`app-stubbed-showcase`
 SkyEU prod: ServiceAccount `app-sa` in namespace `app-prod`
 -->
