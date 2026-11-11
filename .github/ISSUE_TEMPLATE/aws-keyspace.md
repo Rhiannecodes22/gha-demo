@@ -87,49 +87,29 @@ If requesting **non-standard replication settings**, explain below:
 
 - [ ] NowTV (Sky Account)
 - [ ] Peacock (NBCU Account)
+- [ ] Showmax (Summer Account)
 - [ ] SkyShowtime (Summer Account)
 
 ---
 
-### IRSA
+### Authentication
 
-IRSA is the default authentication: a Kubernetes service account assumes an IAM role, with no IAM user keys. Will the application connect to these keyspaces with IRSA?
+Choose how the application will access the requested keyspaces:
 
-- [ ] Yes, IRSA (default)
-- [ ] No, IAM user (legacy or shared keyspace)
+- [ ] IRSA IAM role (default)
+- [ ] IAM user credentials in Vault
 
-If you ticked Yes, complete these details. Leave them blank if you ticked No.
+#### Trust relationship
+
+Complete this only if you selected IRSA. Add one line for each namespace that needs access.
 
 - Team: `team-name`
-- Service account: `app_name-sa`
+- `<Project> <environment>`: ServiceAccount `app-sa` in namespace `app-namespace`
 
-Add the namespaces the pods run in for each environment you ticked above, and delete the table for any environment you did not tick. Use one row per Project selected above, and separate namespaces with commas. Include any namespace that runs a migrator Job. Delete a row if this request has no keyspaces in that Project.
-
-**Dev**
-
-| Project | Namespaces |
-| --- | --- |
-| NowTV (Sky Account) | app_name-int |
-| Peacock (NBCU Account) | app_name-stable-int |
-| SkyShowtime (Summer Account) | app_name-stubbed-nft |
-
-**Stage** (Peacock only)
-
-| Project | Namespaces |
-| --- | --- |
-| Peacock (NBCU Account) | app_name-int-nft |
-
-**Prod**
-
-| Project | Namespaces |
-| --- | --- |
-| NowTV (Sky Account) | app_name-prod |
-| Peacock (NBCU Account) | app_name-prod |
-| SkyShowtime (Summer Account) | app_name-prod |
-
-> ℹ️ This request covers the keyspaces and the IRSA IAM roles together. The team, service account, and namespaces do not need to exist yet.
-> OVP SRE creates one IAM role for each Project and environment. Each role is trusted by the service account in the namespaces listed for that Project and environment, has access to the keyspaces in this request for that environment, and returns the role ARN.
-
+<-- Example:
+SkyEU dev: ServiceAccount `app-sa` in namespace `app-stubbed-functional`,`app-stubbed-showcase`
+SkyEU prod: ServiceAccount `app-sa` in namespace `app-prod`
+-->
 ---
 
 ## 📝 Optional
