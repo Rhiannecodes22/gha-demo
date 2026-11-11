@@ -1,7 +1,7 @@
 ---
 name: AWS Keyspaces - IRSA Role
 about: Request IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
-title: "Provision IAM Roles for IRSA Authentication - [Team] - [App] - [Environment]"
+title: "Provision IAM Roles for IRSA Authentication - <Team> - <App> - <Environment>"
 labels: AWS,Persistence - AWS Keyspaces
 assignees: ""
 ---
