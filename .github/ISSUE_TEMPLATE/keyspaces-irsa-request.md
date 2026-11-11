@@ -1,7 +1,7 @@
 ---
 name: AWS Keyspaces - IRSA Role
 about: Request IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
-title: "Provision IAM Roles for IRSA Authentication - <Team> - <App> - <Environment>"
+title: "Provision IAM Roles for IRSA Authentication - <Team> - <Application> - <Environment>"
 labels: AWS,Persistence - AWS Keyspaces
 assignees: ""
 ---
@@ -69,7 +69,7 @@ Dev usually runs in a single region: SkyEU in eu-central-1, NBCU in us-west-2, a
 ### Point of Contact
 
 Name and email
-#slack
+#team-slack-channel
 
 ## Useful docs
 
