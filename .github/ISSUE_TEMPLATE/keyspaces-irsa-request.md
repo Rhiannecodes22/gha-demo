@@ -36,7 +36,7 @@ Provision IAM Roles for IRSA with the following requirements.
 
 **1. Trust Relationship (IRSA):**
 
-All roles must trust the Service Account `` in the following namespaces. List namespaces after the label, separated by commas. Leave empty when this request has no role there.
+All roles must trust the Service Account `<service-account-name>` in the following namespaces. List namespaces after the label, separated by commas. Leave empty when this request has no role there.
 
 SkyEU:
 NBCU:
