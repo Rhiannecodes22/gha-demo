@@ -1,6 +1,6 @@
 name: AWS Keyspaces - IRSA Role - Stage and prod
 description: Request stage or prod IRSA IAM roles for a Kubernetes service account to access AWS Keyspaces.
-title: "Provision IAM Roles for IRSA Authentication - [Team] - [App] - [Environment]"
+title: "Provision IAM Roles for IRSA Authenticationa - [Team] - [App] - [Environment]"
 labels:
   - AWS
   - Persistence - AWS Keyspaces
