@@ -6,8 +6,6 @@ labels: AWS,Persistence - AWS Keyspaces
 assignees: ""
 ---
 
-> **One environment per issue.** For dev, stage, and prod, raise a new issue from this template for each environment. Do not tick more than one environment below.
-
 ## Description of Requirements
 
 Provision IAM Roles for IRSA with the following requirements.
@@ -29,6 +27,7 @@ Provision IAM Roles for IRSA with the following requirements.
 - [ ] SkyShowtime (Summer)
 
 ### Environment
+> **One environment per issue.** For dev, stage, and prod, raise a new issue from this template for each environment. Do not tick more than one environment below.
 
 - [ ] dev
 - [ ] stage
