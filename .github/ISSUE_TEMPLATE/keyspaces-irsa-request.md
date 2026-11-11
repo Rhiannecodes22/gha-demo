@@ -71,6 +71,11 @@ Dev usually runs in a single region: SkyEU in eu-central-1, NBCU in us-west-2, a
 Name and email
 #slack
 
+## Useful docs
+
+The page covers how OVP SRE manages AWS Keyspaces, including
+IRSA: [High Level How OVP SRE Manages AWS Keyspaces](https://gspcloud.atlassian.net/wiki/spaces/ODO/pages/1862205461/High+Level+How+OVP+SRE+Manages+AWS+Keyspaces)
+
 ### Definition of Done
 
 <!-- For OVP SRE after the request is submitted. The requester leaves these unticked. -->
